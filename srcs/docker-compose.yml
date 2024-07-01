@@ -9,13 +9,13 @@ services:
       context: requirements/nginx
       dockerfile: Dockerfile
     restart:
-      on-failure
+      on-failure # redemarre seulement si crash
     depends_on:
       - wordpress
     env_file:
       - .env
     ports:
-      -"443:443"
+      - "443:443" # port exposé à la machine locale
     
   wordpress:
     container_name: wordpress
@@ -31,7 +31,7 @@ services:
     env_file:
       - .env
     volumes:
-      wordpress: /var/www/html
+      - wordpress:/var/www/html
     expose:
       - "9000"
 
@@ -43,22 +43,27 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     restart:
-      unless-stopped
+      unless-stopped # redemarre tant que pas stoppé
     env_file:
       - .env
     volumes:
-      -mariadb:/var/lib/mysql
+      - mariadb:/var/lib/mysql # path vers les dossier que l'on veut stocker sur le volume 'mariadb'
     expose:
       - "3306"
   
 volumes :
-  wordpress:
-    driver: local
+  wordpress: # Named volume (can then be used in multiple containers)
+    driver: local # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
     driver_opts:
       type: 'none'
       o: 'bind'
+      device: /Users/hlesny/data/wordpress # Specifies the path on the host system that will be mounted into the container.
   mariadb:
-    driver: local
+    driver: local # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /Users/hlesny/data/mariadb
 
 networks:
   inception:
