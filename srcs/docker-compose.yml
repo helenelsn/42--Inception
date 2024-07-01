@@ -73,7 +73,7 @@ services:
 
 # driver:local -> # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
 volumes :
-  wordpress: # Named volume (can then be used in multiple containers)
+  wordpress:
     driver: local 
   mariadb:
     driver: local
