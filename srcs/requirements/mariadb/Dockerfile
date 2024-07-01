@@ -1,6 +1,6 @@
 FROM	debian:bookworm
 
-RUN		apt update && apt upgrade
+RUN		apt update && apt upgrade -y
 RUN     apt install -y mariadb-server #mariadb-client ??
 
 COPY    conf/mariadb.cnf	/etc/mysql/mariadb.conf.d/mariadb.cnf

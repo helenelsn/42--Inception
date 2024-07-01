@@ -1,6 +1,6 @@
 FROM	debian:bookworm
 
-RUN		apt update && apt upgrade
+RUN		apt update && apt upgrade -y
 RUN     apt install -y wget php php-fpm mariadb-client
 
 # -P to indicate the directory on which we want to download the file

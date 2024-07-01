@@ -57,13 +57,13 @@ volumes :
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /Users/hlesny/data/wordpress # Specifies the path on the host system that will be mounted into the container.
+      device: /home/hlesny/wordpress # Specifies the path on the host system that will be mounted into the container.
   mariadb:
     driver: local # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /Users/hlesny/data/mariadb
+      device: /home/hlesny/mariadb
 
 networks:
   inception:

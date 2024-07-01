@@ -1,6 +1,6 @@
 FROM	debian:bookworm
 
-RUN		apt update && apt upgrade
+RUN		apt update && apt upgrade -y
 RUN		apt install -y nginx openssl 
 
 # directory to store tsl key and certificate 
