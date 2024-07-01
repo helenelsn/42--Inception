@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   nginx:
@@ -11,12 +11,19 @@ services:
     restart:
       on-failure # redemarre seulement si crash
     depends_on:
-      - wordpress
+      wordpress: 
+        condition: service_healthy
     env_file:
       - .env
     ports:
       - "443:443" # port exposé à la machine locale
-    
+    healthcheck:
+      test: 'curl -kfsSL https://localhost:443:status'
+      interval: 5s
+      timeout: 1s
+      retries: 10
+      start_period: 5s
+
   wordpress:
     container_name: wordpress
     networks:
@@ -27,13 +34,20 @@ services:
     restart:
       on-failure
     depends_on:
-      - mariadb
+      mariadb: 
+        condition: service_healthy
     env_file:
       - .env
     volumes:
-      - wordpress:/var/www/html
+      - /home/hlesny/wordpress:/var/www/html
     expose:
       - "9000"
+    healthcheck:
+      test: cgi-fcgi -connect localhost:9000 /status
+      interval: 5s
+      timeout: 1s
+      retries: 30
+      start_period: 5s
 
   mariadb:
     container_name: mariadb
@@ -47,23 +61,22 @@ services:
     env_file:
       - .env
     volumes:
-      - mariadb:/var/lib/mysql # path vers les dossier que l'on veut stocker sur le volume 'mariadb'
+      - /home/hlesny/mariadb:/var/lib/mysql # path vers les dossier que l'on veut stocker sur le volume 'mariadb'
     expose:
       - "3306"
-  
+    healthcheck:
+      test: mysqladmin ping --host=localhost --password="${SQL_ROOT_PASSWORD}"
+      interval: 5s
+      timeout: 1s
+      retries: 20
+      start_period: 5s
+
+# driver:local -> # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
 volumes :
   wordpress: # Named volume (can then be used in multiple containers)
-    driver: local # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: /home/hlesny/wordpress # Specifies the path on the host system that will be mounted into the container.
+    driver: local 
   mariadb:
-    driver: local # Specifies the storage driver to use for managing the volume. The local driver is the default driver for Docker on Linux systems. It stores volumes in the /var/lib/docker/volumes/ directory on the host system
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: /home/hlesny/mariadb
+    driver: local
 
 networks:
   inception:
